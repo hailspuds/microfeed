@@ -31,6 +31,7 @@ If you have any questions or feedback, please don't hesitate to reach out to us 
 
 ## 📚 Table of contents
 [![Deploy to Cloudflare Pages](https://github.com/microfeed/microfeed/actions/workflows/deploy.yml/badge.svg?event=workflow_dispatch)](https://github.com/microfeed/microfeed/actions/workflows/deploy.yml)
+[![CI](https://github.com/microfeed/microfeed/actions/workflows/ci.yml/badge.svg)](https://github.com/microfeed/microfeed/actions/workflows/ci.yml)
 [![Email us](https://img.shields.io/badge/Email-support%40microfeed.org-blue)](mailto:support@microfeed.org)
 [![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://www.microfeed.org/i/introducing-microfeed-self-hosted-cms-on-cloudflare-opensource-serverless-free-uhbQEmArlC2/)
 
@@ -59,9 +60,11 @@ microfeed makes it easy for individuals to self-host their own feed on Cloudflar
 * an Instagram-like feed of images (e.g., [llamacorn.listennotes.com](https://llamacorn.listennotes.com/))
 * a YouTube-like feed of videos
 * a personal website with custom links (e.g., [wenbin.org](https://www.wenbin.org/))
-* a content curation feed of external urls
+* a content curation feed of external news article urls
 * a marketing site with updates and press coverage (e.g., [microfeed.org](https://www.microfeed.org/))
-* a headless cms with a GUI dashboard and a public json feed (e.g., [microfeed.org/json](https://www.microfeed.org/json/))
+* a headless cms with a GUI dashboard and a public json feed (e.g., [microfeed.org/json](https://www.microfeed.org/json/) with OpenAPI spec in [YAML](https://www.microfeed.org/json/openapi.yaml) and [HTML](https://www.microfeed.org/json/openapi.html))
+* a list of domain names for sale (e.g., [listen411.com](https://www.listen411.com/), [ListenHost.com](https://www.listenhost.com/)...)
+* a website for an entire book (e.g., [The Art of War](https://the-art-of-war.dripbook.xyz/))
 * ...
 
 microfeed uses Cloudflare [Pages](https://pages.cloudflare.com/) to host and run the code,
@@ -309,6 +312,27 @@ If you don't want to pay for servers, microfeed can be a cost-effective solution
 
 If you are looking for something new and are interested in exploring different options, microfeed could be a good choice to consider.
 It is always a good idea to carefully evaluate any service before using it to ensure that it meets your needs and is a good fit for your use case.
+</details>
+
+<details>
+<summary><b>How to download / backup data from microfeed / Cloudflare?</b></summary>
+
+microfeed stores data in Cloudflare D1 and R2. Therefore, you'll download two things to backup your microfeed data:
+* a sqlite database from [Cloudflare D1](https://developers.cloudflare.com/d1/), including all metadata.
+* media files from [Cloudflare R2](https://developers.cloudflare.com/r2/), including audio, image, video...
+
+<b>How to download a sqlite database from D1?</b>
+
+You can use the command line tool `wrangler` to find sqlite database files and download backups:
+
+[https://developers.cloudflare.com/workers/wrangler/commands/#d1](https://developers.cloudflare.com/workers/wrangler/commands/#d1)
+
+<b>How to download media files from R2?</b>
+
+As of Feb 16, 2023, Cloudflare has not provided tools to to batch download all files from a R2 bucket. 
+
+You may need to write a script to use [S3-compatible APIs](https://developers.cloudflare.com/r2/data-access/s3-api/api/) to fetch all objects from a specific R2 bucket.
+
 </details>
 
 [Back to 📚TOC](#-table-of-contents)

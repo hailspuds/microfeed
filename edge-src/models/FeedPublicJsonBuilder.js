@@ -9,16 +9,17 @@ import {humanizeMs, msToRFC3339} from "../../common-src/TimeUtils";
 import {ENCLOSURE_CATEGORIES, STATUSES} from "../../common-src/Constants";
 import {isValidMediaFile} from "../../common-src/MediaFileUtils";
 
-const DEFAULT_MICROFEED_VERSION = 'v1';
+const {MICROFEED_VERSION} = require('../../common-src/Version');
 
 export default class FeedPublicJsonBuilder {
-  constructor(content, baseUrl, forOneItem = false) {
+  constructor(content, baseUrl, request, forOneItem = false) {
     this.content = content;
     this.settings = content.settings || {};
     this.webGlobalSettings = this.settings.webGlobalSettings || {};
     this.publicBucketUrl = this.webGlobalSettings.publicBucketUrl || '';
     this.baseUrl = baseUrl;
     this.forOneItem = forOneItem;
+    this.request = request;
   }
 
   _decorateForItem(item, baseUrl) {
@@ -26,7 +27,9 @@ export default class FeedPublicJsonBuilder {
     item.jsonUrl = PUBLIC_URLS.jsonItem(item.id, null, baseUrl);
     item.rssUrl = PUBLIC_URLS.rssItem(item.id, null, baseUrl);
 
-    item.pubDate = humanizeMs(item.pubDateMs);
+    // Try our best to use local time of a website visitor
+    const timezone = this.request.cf ? this.request.cf.timezone : null;
+    item.pubDate = humanizeMs(item.pubDateMs, timezone);
     item.pubDateRfc3339 = msToRFC3339(item.pubDateMs);
     item.descriptionText = htmlToPlainText(item.description);
 
@@ -93,7 +96,8 @@ export default class FeedPublicJsonBuilder {
     const channel = this.content.channel || {};
     const subscribeMethods = this.settings.subscribeMethods || {'methods': []};
     const microfeedExtra = {
-      microfeed_version: this.content.microfeed_version || DEFAULT_MICROFEED_VERSION,
+      microfeed_version: MICROFEED_VERSION,
+      base_url: this.baseUrl,
       categories: [],
     };
     const channelCategories = channel.categories || [];
@@ -256,10 +260,10 @@ export default class FeedPublicJsonBuilder {
       _microfeed['itunes:episodeType'] = item['itunes:episodeType'];
     }
     if (item['itunes:season']) {
-      _microfeed['itunes:season'] = item['itunes:season'];
+      _microfeed['itunes:season'] = parseInt(item['itunes:season'], 10);
     }
     if (item['itunes:episode']) {
-      _microfeed['itunes:episode'] = item['itunes:episode'];
+      _microfeed['itunes:episode'] = parseInt(item['itunes:episode'], 10);
     }
     if (item['itunes:explicit']) {
       _microfeed['itunes:explicit'] = item['itunes:explicit'];
